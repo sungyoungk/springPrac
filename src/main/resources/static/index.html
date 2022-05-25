@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--    ajax링크-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <!--    부트스트랩-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+    <style>
+        .headder {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1502134249126-9f3755a50d78?crop=entropy&cs=tinysrgb&fm=jpg&ixlib=rb-1.2.1&q=80&raw_url=true&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170');
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 20px;
+
+
+
+            width: 100%;
+            height: 150px;
+            background-color: beige;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .headder > button {
+            background-color: transparent;
+            border: 1px solid white;
+            border-radius: 10px;
+        }
+        .headder > button:hover{
+            border: 2px solid white;
+            background-color: transparent;
+
+        }
+        .box {
+            width: 600px;
+            margin: 0px auto 50px auto;
+            padding: 30px 30px 30px 30px;
+
+            border: 2px solid darkgray;
+            border-radius: 30px;
+        }
+        .mybtn > button{
+            background-color: black;
+            color: white;
+            border: transparent;
+            border-radius: 5px;
+            padding: 3px 20px 3px 20px;
+        }
+        .card{
+            width: 800px;
+            margin: 10px auto 10px auto;
+        }
+        .comment > .card > .card-body > .footer > .footerIcon  {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: right;
+        }
+        .footerIcon > img {
+            margin-left: 20px;
+        }
+
+
+        @import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css);
+    </style>
+
+    <script>
+        $(document).ready( function() {
+            hide();
+            } );
+        function hide() {
+            $('#postBox').hide();
+        }
+
+        function show(){
+            $('#postBox').show();
+        }
+
+        //============ 콘텐츠 입력 확인 =============
+        function isValidContents(contents) {
+            if (contents == '') {
+                alert('내용을 입력해주세요');
+                return false;
+            }
+            if (contents.trim().length > 140) {
+                alert('공백 포함 140자 이하로 입력해주세요');
+                return false;
+            }
+            return true;
+        }
+
+        function writePost() {
+            let username = $('#username').val();
+            let password = $('#password').val();
+            let contents = $('#contents').val();
+
+            if (isValidContents(contents) == false) {
+                return;
+            }
+            let data = {'username': username,
+                        'password': password,
+                        'contents': contents};
+
+            $.ajax({
+                type: "POST",
+                url: "/api/posts",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('메시지가 성공적으로 작성되었습니다.');
+                    window.location.reload();
+                }
+            });
+        }
+
+        function getPost() {
+            $('#postBox').empty();
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/posts',
+                success: function (response) {
+                    for (let i = 0; i < response.length; i++) {
+                        let post_list = response[i];
+                        let id = post_list['id'];
+                        let username = post_list['username'];
+                        let contents = post_list['contents'];
+                        let password = post_list['password'];
+                        addHTML(id, username, contents, password);
+                    }
+                }
+            })
+        }
+
+        function addHTML(id, username, contents, password) {
+        let temp_html = ` <div class="card">
+                            <div class="card-body">
+                                <div class="userNameDiv" id="${id}-userNameDiv">
+                                   <h5> ${username}</h5>
+                                </div>
+
+                                <div class="contents" id="${id}-contents">
+                                    <p class="card-text"> ${contents}</p>
+                                </div>
+
+                                <div class="footer">
+                                    <div class="footerIcon">
+                                        <img id="${id}-edit" onclick="editPost('${id}')" class="icon-start-edit" src="images/edit.png" alt="">
+                                        <img id="${id}-delete" onclick="deleteOne('${id}')" class="icon-delete" src="images/delete.png" alt="">
+                                        <img id="${id}-submit" onclick="submitEdit('${id}')" class="icon-end-edit" src="images/done.png" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+
+            $(`#comment`).append(temp_html);
+        }
+
+
+
+
+    </script>
+</head>
+
+<body>
+<!--============ 헤더 및 작성 박스 열기 버튼 ===========-->
+    <div class="headder">
+        <button onclick="show()" type="submit" class="btn btn-primary">게시글 작성하기</button>
+    </div>
+
+<!--    ========= 포스팅 입력 박스 html =========-->
+    <div class="box" id="postBox">
+        <div class="mb-3">
+            <label class="form-label">닉네임</label>
+            <input type="text" class="form-control" id="username">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">비밀번호</label>
+            <input type="password" class="form-control" id="password">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">내용</label>
+            <textarea class="form-control" id="contents" rows="3"></textarea>
+        </div>
+        <div class="mybtn">
+            <button onclick="writePost()" id="insert">완료</button>
+            <button id="cancel"  onclick="hide()">취소</button>
+        </div>
+    </div>
+
+<!--========= 카드 붙는 html======-->
+    <div class ="comment">
+        <div class="card">
+            <div class="card-body">
+                <div class="userNameDiv" id="userNameDiv">
+                   <h5> 김성영</h5>
+                </div>
+
+                <div class="contents" id="1-contents">
+                    <p class="card-text"> 과제 완료!</p>
+                </div>
+
+                <div class="footer">
+                    <div class="footerIcon">
+                        <img id="1-edit" onclick="editPost('1')" class="icon-start-edit" src="images/edit.png" alt="">
+                        <img id="1-delete" onclick="deleteOne('1')" class="icon-delete" src="images/delete.png" alt="">
+                        <img id="1-submit" onclick="submitEdit('1')" class="icon-end-edit" src="images/done.png" alt="">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="userNameDiv" id="userNameDiv">
+                    <h5> 김성영</h5>
+                </div>
+
+                <div class="contents" id="1-contents">
+                    <p class="card-text"> 과제 완료!</p>
+                </div>
+
+                <div class="footer">
+                    <div class="footerIcon">
+                        <img id="1-edit" onclick="editPost('1')" class="icon-start-edit" src="images/edit.png" alt="">
+                        <img id="1-delete" onclick="deleteOne('1')" class="icon-delete" src="images/delete.png" alt="">
+                        <img id="1-submit" onclick="submitEdit('1')" class="icon-end-edit" src="images/done.png" alt="">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
