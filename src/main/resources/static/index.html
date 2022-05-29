@@ -74,8 +74,11 @@
 
     <script>
         $(document).ready( function() {
+            getPost();
             hide();
+
             } );
+
         function hide() {
             $('#postBox').hide();
         }
@@ -202,26 +205,6 @@
             <div class="card-body">
                 <div class="userNameDiv" id="userNameDiv">
                    <h5> 김성영</h5>
-                </div>
-
-                <div class="contents" id="1-contents">
-                    <p class="card-text"> 과제 완료!</p>
-                </div>
-
-                <div class="footer">
-                    <div class="footerIcon">
-                        <img id="1-edit" onclick="editPost('1')" class="icon-start-edit" src="images/edit.png" alt="">
-                        <img id="1-delete" onclick="deleteOne('1')" class="icon-delete" src="images/delete.png" alt="">
-                        <img id="1-submit" onclick="submitEdit('1')" class="icon-end-edit" src="images/done.png" alt="">
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="userNameDiv" id="userNameDiv">
-                    <h5> 김성영</h5>
                 </div>
 
                 <div class="contents" id="1-contents">

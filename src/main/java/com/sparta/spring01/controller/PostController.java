@@ -24,7 +24,12 @@ public class PostController {
 
     @GetMapping("/api/posts")
     public List<Post> getPost() {
-        return postRepository.findAllByOrderByModifiedAtDesc();
+        List<Post> allByOrderByModifiedAtDesc = postRepository.findAll();
+        for (Post post : allByOrderByModifiedAtDesc) {
+            System.out.println(post);
+
+        }
+        return allByOrderByModifiedAtDesc;
     }
 
     @DeleteMapping("/api/posts/{id}")

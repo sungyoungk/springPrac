@@ -19,7 +19,11 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
         );
-        post.update(requestDto);
-        return post.getId();
+        if(post.getPassword().equals(requestDto.getPassword())) {
+            post.update(requestDto);
+            return post.getId();
+        } else {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
     }
 }
